@@ -1,0 +1,62 @@
+server:
+  port: 8765
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${server.port} # Ensures consistency in instance naming
+    lease-renewal-interval-in-seconds: 10    # Frequency of service health updates (default is 30)
+    lease-expiration-duration-in-seconds: 30 # Time to wait before removing an unhealthy service (default is 90)
+    health-check-url-path: /actuator/health  # Health endpoint
+    status-page-url-path: /actuator/info     # Optional: general service info
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+  application:
+    name: Gateway
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+# Profile-Specific Configuration for Docker Cloud Environment
+---
+spring:
+  profiles: docker-cloud  # This will be activated when the 'docker-cloud' profile is active
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+  application:
+    name: Gateway
+
+server:
+  port: 8765  # You can modify the port here if needed for cloud-specific purposes
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/  # Change to match the Docker container or service name
+  instance:
+    instance-id: ${spring.application.name}:${server.port}  # The instance ID remains the same
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+    health-check-url-path: /actuator/health  # Health endpoint
+    status-page-url-path: /actuator/info     # Optional: general service info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info

@@ -1,0 +1,41 @@
+# Default properties for local development
+spring:
+  application:
+    name: eureka-server
+
+server:
+  port: 8761
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  instance:
+    hostname: localhost  # For local development
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+---
+# Properties for Docker or Cloud environments
+spring:
+  profiles: docker-cloud
+
+server:
+  port: 8761
+
+eureka:
+  client:
+    register-with-eureka: true  # Eureka should register itself in cloud/Docker
+    fetch-registry: true        # Eureka should fetch registry from another Eureka instance
+  instance:
+    hostname: eureka-server    # Use the container's hostname or internal network name in Docker
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info

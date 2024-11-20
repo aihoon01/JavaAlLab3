@@ -1,0 +1,42 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: User-Service
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${server.port} # Ensures consistency in instance naming
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+# Profile-Specific Configuration for Docker Cloud Environment
+---
+spring:
+  profiles: docker-cloud  # This will be activated when the 'docker-cloud' profile is active
+
+server:
+  port: 8081  # You can change the port here if needed for cloud-specific purposes
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/  # Change to match the Docker container or service name (Eureka server)
+  instance:
+    instance-id: ${spring.application.name}:${server.port}  # Instance ID remains the same
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+    health-check-url-path: /actuator/health  # Health check URL
+    status-page-url-path: /actuator/info     # Optional: General service info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info  # Ensure health and info endpoints are exposed in Docker
